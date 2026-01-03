@@ -10,3 +10,6 @@
 [submodule ".claude-skills"]
 	path = .claude-skills
 	url = https://github.com/luiscamaral/k8s-cell-platform-skills.git
+[submodule "l3_ci-supply-chain"]
+	path = l3_ci-supply-chain
+	url = https://github.com/luiscamaral/k8s-cell-platform-l3.git
