@@ -58,8 +58,8 @@ storage:
   # NFS Configuration (if using NFS provisioner)
   nfs:
     enabled: true
-    server: "192.168.100.254"          # NFS server IP
-    path: "/volume1/k8s-storage"       # NFS export path
+    server: "192.168.2.50"             # NFS server IP (Synology)
+    path: "/volume2/shared/servers/k8s-storage"  # NFS export path
 
   # Alternative: Longhorn (uncomment if using)
   # longhorn:
