@@ -1,7 +1,7 @@
 # Kubernetes Cell Platform - Version Compatibility Matrix
 # This file tracks compatible versions across all layers
 
-platform_version: "0.4.0"
+platform_version: "0.5.0"
 last_updated: "2026-01-02"
 
 layers:
@@ -17,7 +17,7 @@ layers:
       talos_provider: "0.9.0"
 
   l1_cluster_platform:
-    version: "1.2.0"
+    version: "1.3.0"
     status: deployed
     requires:
       l0_infrastructure: ">=1.0.0"
@@ -29,6 +29,9 @@ layers:
       linkerd: "edge-25.12.3"      # CLI-managed
       linkerd_viz: "edge-25.12.3"  # CLI-managed
       karpenter: "0.4.1"
+      cert_manager: "1.16.2"       # TLS automation
+      nfs_provisioner: "4.0.18"    # PVC provisioning
+      minio: "5.3.0"               # S3-compatible storage
 
   l2_core_platform:
     version: "0.3.0"
@@ -42,14 +45,16 @@ layers:
       # Note: linkerd and metrics_server moved to L1
 
   l3_ci_supply_chain:
-    version: "0.0.0"
-    status: planned
+    version: "0.1.0"
+    status: scaffolded
     requires:
+      l1_cluster_platform: ">=1.3.0"  # Needs cert-manager, storage, minio
       l2_core_platform: ">=0.1.0"
     components:
-      tekton: "latest"
-      harbor: "latest"
-      gitea: "latest"
+      actions_runner_controller: "0.9.3"  # GitHub self-hosted runners
+      harbor: "2.11.0"                    # Container registry
+      trivy_operator: "0.24.1"            # Vulnerability scanning
+      cosign: "2.4.x"                     # Image signing (CLI)
 
   l4_observability:
     version: "0.0.0"

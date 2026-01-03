@@ -18,9 +18,16 @@ Defines which layer owns each component and their responsibilities.
 | Linkerd | L1 | linkerd | Service mesh, mTLS (CLI-managed) |
 | Linkerd-viz | L1 | linkerd-viz | Mesh observability (CLI-managed) |
 | Karpenter | L1 | kube-system | Node autoscaling |
+| cert-manager | L1 | cert-manager | TLS certificate automation |
+| NFS Provisioner | L1 | nfs-provisioner | PersistentVolume provisioning |
+| MinIO | L1 | minio | S3-compatible object storage |
 | Argo CD | L2 | argocd | GitOps deployment |
 | Kyverno | L2 | kyverno | Policy enforcement |
 | SOPS/age | L2 | N/A | Secret encryption |
+| Actions Runner Controller | L3 | arc-systems | GitHub self-hosted runners |
+| Harbor | L3 | harbor | Container registry |
+| Trivy Operator | L3 | trivy-system | Vulnerability scanning |
+| Cosign | L3 | N/A | Image signing (CLI tool) |
 
 ## Boundary Rules
 
@@ -38,6 +45,9 @@ Defines which layer owns each component and their responsibilities.
 - **DNS automation** - external-dns manages records
 - **Service mesh** - Linkerd provides mTLS (CLI-managed)
 - **Node scaling** - Karpenter provisions/deprovisions
+- **TLS certificates** - cert-manager with internal CA
+- **Persistent storage** - NFS provisioner for PVCs
+- **Object storage** - MinIO S3-compatible storage
 
 > **Management**: L1 components are deployed via Helm/Makefile, NOT ArgoCD.
 > Run `make deploy-all` in `l1_cluster-platform/` directory.
@@ -46,17 +56,30 @@ Defines which layer owns each component and their responsibilities.
 ### L2 Owns
 - **Application deployment** - Argo CD manages workloads
 - **Policy enforcement** - Kyverno validates resources
+- **Image verification** - Kyverno + Cosign policies
+
+### L3 Owns
+- **CI/CD runners** - Actions Runner Controller for GitHub
+- **Container registry** - Harbor for image storage
+- **Vulnerability scanning** - Trivy Operator
+- **Image signing** - Cosign integration
+
+> **Management**: L3 components deployed via Helm/Makefile.
+> L3 requires L1 storage components (cert-manager, NFS, MinIO).
 
 ## Cross-Layer Dependencies
 
 ```
 L0: Talos + Cilium (provides cluster, CNI)
     ↓
-L1: MetalLB + nginx-ingress + metrics-server + external-dns + Linkerd + Karpenter
+L1: MetalLB + nginx-ingress + external-dns + Linkerd + Karpenter
+    + cert-manager + NFS provisioner + MinIO
     ↓
 L2: Argo CD + Kyverno (provides GitOps and policy)
     ↓
-L3+: Applications (consume platform)
+L3: ARC + Harbor + Trivy + Cosign (CI/CD and supply chain)
+    ↓
+L4+: Observability, Resilience, Security, Developer Portal
 ```
 
 ## Upgrade Responsibility
@@ -81,5 +104,12 @@ L3+: Applications (consume platform)
 | kubectl top not working | L1 | metrics-server |
 | DNS not resolving | L1 | external-dns |
 | mTLS issues | L1 | Linkerd |
+| Certificate not issued | L1 | cert-manager |
+| PVC Pending | L1 | NFS provisioner |
+| S3 access denied | L1 | MinIO |
 | App not syncing | L2 | Argo CD |
 | Policy blocking | L2 | Kyverno |
+| Runner not picking jobs | L3 | ARC |
+| Image push failed | L3 | Harbor |
+| Vulnerability scan missing | L3 | Trivy |
+| Signature verification failed | L3 | Cosign/Kyverno |
