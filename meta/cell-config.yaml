@@ -1,0 +1,98 @@
+# Kubernetes Cell Platform - Cell Configuration
+# This file contains cell-specific settings that can be customized per deployment
+# Copy this file and modify for each cell (homelab, staging, production, etc.)
+
+cell:
+  name: "homelab"                      # Unique cell identifier
+  environment: "development"           # development | staging | production
+  description: "Home lab Kubernetes cluster on Proxmox"
+
+# Domain Configuration
+domain:
+  base: "lab.home"                     # Base domain for internal services
+  public: "example.com"                # Public domain (for Let's Encrypt ACME)
+  use_public_certs: false              # true = Let's Encrypt, false = internal CA
+
+# Ingress Configuration
+ingress:
+  class: "nginx"
+  tls:
+    issuer: "internal-ca"              # internal-ca | letsencrypt-staging | letsencrypt-prod
+
+# Internal CA Configuration
+internal_ca:
+  enabled: true
+  name: "homelab-ca"
+  organization: "Homelab"
+  country: "US"
+  validity: "87600h"                   # 10 years for root CA
+  cert_validity: "8760h"               # 1 year for issued certs
+
+# Service Hostnames
+services:
+  # L1 Services
+  minio:
+    api_host: "minio.lab.home"
+    console_host: "minio-console.lab.home"
+
+  # L2 Services
+  argocd:
+    host: "argocd.lab.home"
+
+  # L3 Services
+  harbor:
+    host: "harbor.lab.home"
+
+  # L4 Services (planned)
+  grafana:
+    host: "grafana.lab.home"
+  prometheus:
+    host: "prometheus.lab.home"
+  alertmanager:
+    host: "alertmanager.lab.home"
+
+# Storage Configuration
+storage:
+  class: "nfs-client"                  # Default StorageClass name
+
+  # NFS Configuration (if using NFS provisioner)
+  nfs:
+    enabled: true
+    server: "192.168.100.254"          # NFS server IP
+    path: "/volume1/k8s-storage"       # NFS export path
+
+  # Alternative: Longhorn (uncomment if using)
+  # longhorn:
+  #   enabled: false
+  #   replica_count: 2
+
+# S3/MinIO Configuration
+s3:
+  endpoint: "minio.lab.home"           # Internal S3 endpoint
+  region: "us-east-1"                  # MinIO default region
+  secure: true                         # Use HTTPS
+
+  # Pre-configured buckets
+  buckets:
+    harbor: "harbor-registry"
+    velero: "velero-backups"
+    loki: "loki-chunks"
+    tempo: "tempo-traces"
+
+# Network Configuration
+network:
+  # MetalLB IP Pool
+  metallb_pool:
+    start: "192.168.100.200"
+    end: "192.168.100.250"
+
+  # DNS Server (Pi-hole)
+  dns_server: "192.168.100.254"
+
+  # Cluster VIP
+  cluster_vip: "192.168.100.51"
+
+# GitHub Configuration (for ARC)
+github:
+  organization: "luiscamaral"          # GitHub org or user
+  # app_id and installation_id are stored in secrets
