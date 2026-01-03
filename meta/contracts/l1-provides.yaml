@@ -1,0 +1,57 @@
+# L1 Cluster Platform - Provides Contract
+# Defines what L1 outputs for consumption by L2+
+
+layer: l1_cluster_platform
+version: "1.0.0"
+
+provides:
+  # Services
+  services:
+    - name: load_balancer
+      component: metallb
+      version: "0.15.3"
+      description: LoadBalancer service type support
+      config:
+        ip_pool: "192.168.100.200-192.168.100.250"
+        mode: "L2"
+
+    - name: dns_automation
+      component: external_dns
+      version: "0.17.0"
+      description: Automatic DNS record management
+      config:
+        provider: pihole
+        domain: "homelab.local"
+
+    - name: node_autoscaling
+      component: karpenter
+      version: "0.7.1"
+      description: Automatic node provisioning
+      config:
+        provider: proxmox
+        min_nodes: 0
+        max_nodes: 10
+
+  # Capabilities
+  capabilities:
+    - name: loadbalancer_class
+      value: "metallb"
+      description: LoadBalancer class for services
+
+    - name: dns_annotation
+      value: "external-dns.alpha.kubernetes.io/hostname"
+      description: Annotation for automatic DNS
+
+    - name: node_provisioner
+      value: "karpenter"
+      description: Node provisioner for autoscaling
+
+  # Namespaces
+  namespaces:
+    - metallb-system
+    - external-dns
+    - karpenter
+
+  # Requirements for consumers
+  requirements:
+    metallb_version: ">=0.14"

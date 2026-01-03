@@ -1,0 +1,12 @@
+[submodule "l0_infrastructure"]
+	path = l0_infrastructure
+	url = https://github.com/luiscamaral/k8s-cell-platform-l0.git
+[submodule "l1_cluster-platform"]
+	path = l1_cluster-platform
+	url = https://github.com/luiscamaral/k8s-cell-platform-l1.git
+[submodule "l2_core-platform"]
+	path = l2_core-platform
+	url = https://github.com/luiscamaral/k8s-cell-platform-l2.git
+[submodule ".claude-skills"]
+	path = .claude-skills
+	url = https://github.com/luiscamaral/k8s-cell-platform-skills.git

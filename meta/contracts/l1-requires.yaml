@@ -1,0 +1,51 @@
+# L1 Cluster Platform - Requires Contract
+# Defines what L1 needs from L0
+
+layer: l1_cluster_platform
+version: "1.0.0"
+
+requires:
+  from_layer: l0_infrastructure
+  minimum_version: ">=1.0.0"
+
+  # Required outputs from L0
+  outputs:
+    - name: kubeconfig
+      required: true
+      description: Must be able to access Kubernetes API
+
+    - name: control_plane_endpoint
+      required: true
+      description: Need API endpoint for service discovery
+
+    - name: worker_ips
+      required: true
+      description: Need worker IPs for MetalLB speaker configuration
+
+  # Required network configuration
+  network:
+    - name: node_network
+      required: true
+      description: Need node network for MetalLB IP pool allocation
+
+  # Required capabilities
+  capabilities:
+    - name: cni
+      required: true
+      expected: cilium
+      description: Need CNI for pod networking
+
+    - name: network_policies
+      required: true
+      expected: true
+      description: Need network policy support for security
+
+  # Validation checks
+  validation:
+    - check: "kubectl get nodes"
+      expected: "All nodes Ready"
+      description: Cluster must be healthy
+
+    - check: "kubectl get pods -n kube-system -l k8s-app=cilium"
+      expected: "All Cilium pods Running"
+      description: CNI must be operational

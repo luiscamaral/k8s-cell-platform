@@ -1,0 +1,76 @@
+# L0 Infrastructure - Provides Contract
+# Defines what L0 outputs for consumption by L1
+
+layer: l0_infrastructure
+version: "1.0.0"
+
+provides:
+  # Cluster access
+  outputs:
+    - name: kubeconfig
+      type: file
+      path: "~/.kube/config"
+      description: Kubernetes cluster access configuration
+
+    - name: talosconfig
+      type: file
+      path: "~/.talos/config"
+      description: Talos cluster access configuration
+
+    - name: control_plane_endpoint
+      type: string
+      value: "192.168.100.50:6443"
+      description: Kubernetes API server endpoint
+
+    - name: control_plane_ips
+      type: list
+      value:
+        - "192.168.100.51"
+        - "192.168.100.52"
+        - "192.168.100.53"
+      description: Control plane node IP addresses
+
+    - name: worker_ips
+      type: list
+      value:
+        - "192.168.100.61"
+        - "192.168.100.62"
+        - "192.168.100.63"
+      description: Worker node IP addresses
+
+  # Network configuration
+  network:
+    - name: pod_cidr
+      type: string
+      value: "10.244.0.0/16"
+      description: Pod network CIDR
+
+    - name: service_cidr
+      type: string
+      value: "10.96.0.0/16"
+      description: Service network CIDR
+
+    - name: node_network
+      type: string
+      value: "192.168.100.0/24"
+      description: Node network CIDR
+
+  # Capabilities
+  capabilities:
+    - name: cni
+      value: cilium
+      version: "1.17.3"
+      description: Container Network Interface provider
+
+    - name: kube_proxy_replacement
+      value: true
+      description: Cilium replaces kube-proxy
+
+    - name: network_policies
+      value: true
+      description: Cilium network policies enabled
+
+  # Requirements for consumers
+  requirements:
+    kubernetes_version: ">=1.30"
+    network_plugin: cilium

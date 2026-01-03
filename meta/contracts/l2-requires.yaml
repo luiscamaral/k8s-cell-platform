@@ -1,0 +1,42 @@
+# L2 Core Platform - Requires Contract
+# Defines what L2 needs from L1
+
+layer: l2_core_platform
+version: "0.1.0"
+
+requires:
+  from_layer: l1_cluster_platform
+  minimum_version: ">=1.0.0"
+
+  # Required services from L1
+  services:
+    - name: load_balancer
+      required: true
+      description: Need LoadBalancer for Argo CD UI access
+
+    - name: dns_automation
+      required: false
+      description: Optional - enables automatic DNS for services
+
+  # Required capabilities
+  capabilities:
+    - name: loadbalancer_class
+      required: true
+      description: Need LoadBalancer support for external access
+
+  # Inherited from L0 (through L1)
+  inherited:
+    - name: network_policies
+      from: l0_infrastructure
+      required: true
+      description: Need network policies for Kyverno and security
+
+  # Validation checks
+  validation:
+    - check: "kubectl get pods -n metallb-system"
+      expected: "MetalLB pods Running"
+      description: LoadBalancer must be operational
+
+    - check: "kubectl get svc -A -o jsonpath='{.items[?(@.spec.type==\"LoadBalancer\")].status.loadBalancer.ingress}'"
+      expected: "IP addresses assigned"
+      description: LoadBalancer must assign IPs
