@@ -6,8 +6,9 @@ Last updated: 2026-01-03
 
 - **Provider**: Proxmox
 - **Kubernetes Version**: v1.34.0
-- **Talos Version**: v1.11.5
+- **Talos Version**: v1.12.0
 - **CNI**: Cilium (kube-proxy replacement)
+- **VM Storage**: thin-pool-ssd (Proxmox)
 - **Cell Config**: `meta/cell-config.yaml`
 
 ## Nodes
@@ -42,10 +43,10 @@ Last updated: 2026-01-03
 - **Version**: 0.3.0
 
 ### L3 - CI/Supply Chain
-- **Status**: 🔧 Scaffolded
-- **Version**: 0.1.0
-- **Components**: ARC, Harbor, Trivy, Cosign (configuration ready)
-- **Prerequisite**: Deploy L1 storage components first
+- **Status**: 🚀 Partial
+- **Version**: 0.2.0
+- **Deployed**: Harbor (container registry)
+- **Pending**: ARC (needs GitHub App), Trivy Operator
 
 ### L4-L7
 - **Status**: 📋 Planned
@@ -55,13 +56,17 @@ Last updated: 2026-01-03
 
 | Component | Layer | Command | Status |
 |-----------|-------|---------|--------|
-| Harbor | L3 | `make deploy-harbor` | Ready to deploy |
 | ARC | L3 | `make deploy-arc` | Waiting for GitHub App |
 | Trivy Operator | L3 | `make deploy-trivy` | Ready to deploy |
+| Kubernetes upgrade | L0 | `talosctl upgrade-k8s --to 1.35.0` | Deferred (retry when ready) |
+| MinIO upgrade | L1 | `make deploy-minio` | 5.3.0 → 5.4.0 (Makefile updated) |
 
 ## Resolved Issues
 
 - external-dns: Fixed RBAC (added endpointslices permission)
+- Talos upgrade: v1.11.5 → v1.12.0 completed on all 6 nodes
+- Storage: Migrated all k8s VM disks from `local-lvm` to `thin-pool-ssd` (local-lvm was 100% full causing I/O errors)
+- Harbor deployed: Container registry at https://harbor.lab.home with MinIO S3 backend
 
 ## Cell Configuration
 
@@ -76,6 +81,7 @@ Key settings from `meta/cell-config.yaml`:
 | NFS Path | /volume2/shared/servers/k8s-storage |
 | MinIO API | https://minio.lab.home |
 | MinIO Console | https://minio-console.lab.home |
+| Harbor | https://harbor.lab.home |
 
 ## Access Information
 

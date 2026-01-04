@@ -92,6 +92,22 @@ network:
   # Cluster VIP
   cluster_vip: "192.168.100.51"
 
+  # Time servers for Talos nodes
+  time_servers:
+    - "192.168.4.1"                # Local router/NTP
+    - "time.cloudflare.com"        # Public fallback
+
+# Proxmox Configuration
+proxmox:
+  api_url: "https://proxmox.home.lcamaral.com:8006"
+  node: "proxmox"                   # Default Proxmox node name
+  # Credentials stored in Vault: secret/kubernetes/proxmox/api-token
+
+# Karpenter Configuration
+karpenter:
+  cluster_endpoint: "https://192.168.100.51:6443"
+  # Talos secrets stored in Vault: secret/kubernetes/karpenter/talos-values
+
 # GitHub Configuration (for ARC)
 github:
   organization: "luiscamaral"          # GitHub org or user
